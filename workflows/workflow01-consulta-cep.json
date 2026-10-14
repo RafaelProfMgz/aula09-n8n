@@ -1,0 +1,389 @@
+{
+  "name": "Cadastro de fornecedor - consulta de CEP",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "3aa0c037-fed8-5fa5-b6fb-8686fcbde95e",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8a92be1d-b3e2-5003-9d56-26603d126096",
+              "name": "protocolo",
+              "value": "PED-2026-0412",
+              "type": "string"
+            },
+            {
+              "id": "3eee7917-a318-5955-a643-5ea0cc8e7094",
+              "name": "razao_social",
+              "value": "Papelaria Pantanal Comércio Ltda.",
+              "type": "string"
+            },
+            {
+              "id": "3deec544-2dc1-5a5f-b2b3-f14588a78d5f",
+              "name": "cnpj",
+              "value": "47.021.358/0001-67",
+              "type": "string"
+            },
+            {
+              "id": "9928ad7a-a000-5dda-99d5-79a51c2467b3",
+              "name": "representante",
+              "value": "Marta Aparecida Siqueira",
+              "type": "string"
+            },
+            {
+              "id": "7623ef64-a1d9-5bae-99a7-57bed8a62ac8",
+              "name": "email",
+              "value": "contato@papelariapantanal.exemplo.com.br",
+              "type": "string"
+            },
+            {
+              "id": "dca695f1-8651-5deb-87b6-dfc7db4fea0b",
+              "name": "cep",
+              "value": "78048-000",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2bfcd83d-00b8-5313-a1e1-d65754a235c7",
+      "name": "Dados do pedido",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://brasilapi.com.br/api/cep/v2/{{ $json.cep.replace(/\\D/g, '') }}",
+        "options": {}
+      },
+      "id": "771b8cc3-56f2-5e35-b811-fe0f0b882f98",
+      "name": "Consultar CEP",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cacc1355-0d3b-502e-bd5d-8027a54d2589",
+              "leftValue": "={{ $json.state }}",
+              "rightValue": "MT",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "453952c5-8e54-5d7d-a1a5-e6dc3df1182c",
+      "name": "Endereço em MT?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96f3825d-10aa-596a-a30f-41cf0d6add12",
+              "name": "protocolo",
+              "value": "={{ $('Dados do pedido').item.json.protocolo }}",
+              "type": "string"
+            },
+            {
+              "id": "7a290b55-b1a0-50f3-9205-3852f9e7895e",
+              "name": "razao_social",
+              "value": "={{ $('Dados do pedido').item.json.razao_social }}",
+              "type": "string"
+            },
+            {
+              "id": "927dacc5-91ae-5168-9e9e-c6ba68bbe73c",
+              "name": "cnpj",
+              "value": "={{ $('Dados do pedido').item.json.cnpj }}",
+              "type": "string"
+            },
+            {
+              "id": "dcdcc64b-1756-548d-b6b9-b0e4c4fb1714",
+              "name": "email",
+              "value": "={{ $('Dados do pedido').item.json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "c31be641-5c3e-5d65-bfd0-b80a5d5eafb9",
+              "name": "cep",
+              "value": "={{ $('Dados do pedido').item.json.cep }}",
+              "type": "string"
+            },
+            {
+              "id": "ed1471eb-ef99-553a-b97a-978fc5b8a3a8",
+              "name": "municipio",
+              "value": "={{ $json.city }}",
+              "type": "string"
+            },
+            {
+              "id": "a9e7b4e3-91a7-515e-b3d1-d0c34b29da6d",
+              "name": "uf",
+              "value": "={{ $json.state }}",
+              "type": "string"
+            },
+            {
+              "id": "4d9df26d-0ea3-57af-84d3-09f602afec3b",
+              "name": "logradouro",
+              "value": "={{ $json.street }}",
+              "type": "string"
+            },
+            {
+              "id": "5bac65e2-51e3-5731-845a-a177fd9d52e4",
+              "name": "situacao",
+              "value": "APTO",
+              "type": "string"
+            },
+            {
+              "id": "b265dfa6-5ed8-5df5-8726-73df909c2115",
+              "name": "mensagem",
+              "value": "=Prezado(a) {{ $('Dados do pedido').item.json.representante }}, o endereço informado no pedido {{ $('Dados do pedido').item.json.protocolo }} ({{ $json.street }}, {{ $json.city }}/{{ $json.state }}) foi confirmado pela consulta ao CEP. O cadastro da {{ $('Dados do pedido').item.json.razao_social }} segue para a análise documental.",
+              "type": "string"
+            },
+            {
+              "id": "b39c259d-a373-5d5f-b955-03eb5c9edf6c",
+              "name": "consultado_em",
+              "value": "={{ $now.setZone('America/Cuiaba').toFormat('dd/MM/yyyy HH:mm') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e1d12ab8-4fdd-586c-a03e-9b3ba4c51f9d",
+      "name": "Apto para cadastro",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        900,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96f3825d-10aa-596a-a30f-41cf0d6add12",
+              "name": "protocolo",
+              "value": "={{ $('Dados do pedido').item.json.protocolo }}",
+              "type": "string"
+            },
+            {
+              "id": "7a290b55-b1a0-50f3-9205-3852f9e7895e",
+              "name": "razao_social",
+              "value": "={{ $('Dados do pedido').item.json.razao_social }}",
+              "type": "string"
+            },
+            {
+              "id": "927dacc5-91ae-5168-9e9e-c6ba68bbe73c",
+              "name": "cnpj",
+              "value": "={{ $('Dados do pedido').item.json.cnpj }}",
+              "type": "string"
+            },
+            {
+              "id": "dcdcc64b-1756-548d-b6b9-b0e4c4fb1714",
+              "name": "email",
+              "value": "={{ $('Dados do pedido').item.json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "c31be641-5c3e-5d65-bfd0-b80a5d5eafb9",
+              "name": "cep",
+              "value": "={{ $('Dados do pedido').item.json.cep }}",
+              "type": "string"
+            },
+            {
+              "id": "ed1471eb-ef99-553a-b97a-978fc5b8a3a8",
+              "name": "municipio",
+              "value": "={{ $json.city }}",
+              "type": "string"
+            },
+            {
+              "id": "a9e7b4e3-91a7-515e-b3d1-d0c34b29da6d",
+              "name": "uf",
+              "value": "={{ $json.state }}",
+              "type": "string"
+            },
+            {
+              "id": "4d9df26d-0ea3-57af-84d3-09f602afec3b",
+              "name": "logradouro",
+              "value": "={{ $json.street }}",
+              "type": "string"
+            },
+            {
+              "id": "0f24733c-c2ba-5a10-9eb8-9a40971978da",
+              "name": "situacao",
+              "value": "CONFERENCIA MANUAL",
+              "type": "string"
+            },
+            {
+              "id": "50842bb5-680d-5a61-9b86-4ace4cda7fcc",
+              "name": "mensagem",
+              "value": "=Prezado(a) {{ $('Dados do pedido').item.json.representante }}, o endereço informado no pedido {{ $('Dados do pedido').item.json.protocolo }} ({{ $json.street }}, {{ $json.city }}/{{ $json.state }}) fica fora de Mato Grosso. Para dar sequência ao cadastro da {{ $('Dados do pedido').item.json.razao_social }}, envie o comprovante de endereço da sede para conferência manual.",
+              "type": "string"
+            },
+            {
+              "id": "b39c259d-a373-5d5f-b955-03eb5c9edf6c",
+              "name": "consultado_em",
+              "value": "={{ $now.setZone('America/Cuiaba').toFormat('dd/MM/yyyy HH:mm') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1b314e32-22b3-5e8c-9fbd-e7de0b3ba454",
+      "name": "Conferência manual",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cadastro_fornecedores"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "ed9ccf05-9192-5bfe-a37c-be85a758234e",
+      "name": "Registrar pedido",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1140,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Dados do pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados do pedido": {
+      "main": [
+        [
+          {
+            "node": "Consultar CEP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar CEP": {
+      "main": [
+        [
+          {
+            "node": "Endereço em MT?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Endereço em MT?": {
+      "main": [
+        [
+          {
+            "node": "Apto para cadastro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Conferência manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apto para cadastro": {
+      "main": [
+        [
+          {
+            "node": "Registrar pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conferência manual": {
+      "main": [
+        [
+          {
+            "node": "Registrar pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Cuiaba"
+  },
+  "id": "Aula09wf01Cep00"
+}
