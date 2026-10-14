@@ -1,0 +1,461 @@
+{
+  "name": "Cadastro de fornecedores - rotina diária",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "fb2e0b85-74e1-56ad-a5a4-017abf440767",
+      "name": "Todo dia às 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lista dos pedidos recebidos no dia (dados hipotéticos).\n// Em uso real, a lista viria do formulário, de uma planilha ou de uma Data table.\nconst pedidos = [\n  {\n    \"protocolo\": \"PED-2026-0413\",\n    \"razao_social\": \"Gráfica Chapada Serviços Gráficos Ltda.\",\n    \"cnpj\": \"51.864.027/0001-66\",\n    \"representante\": \"Rogério Lima Bastos\",\n    \"email\": \"comercial@graficachapada.exemplo.com.br\",\n    \"cep\": \"78700-100\"\n  },\n  {\n    \"protocolo\": \"PED-2026-0414\",\n    \"razao_social\": \"Nortão Informática e Suprimentos Ltda.\",\n    \"cnpj\": \"33.609.214/0001-12\",\n    \"representante\": \"Fernanda Costa Rehder\",\n    \"email\": \"vendas@nortaoinfo.exemplo.com.br\",\n    \"cep\": \"78550-200\"\n  },\n  {\n    \"protocolo\": \"PED-2026-0415\",\n    \"razao_social\": \"Acre Mobiliário Corporativo Ltda.\",\n    \"cnpj\": \"60.471.835/0001-54\",\n    \"representante\": \"Joaquim Nery Furtado\",\n    \"email\": \"licitacoes@acremobiliario.exemplo.com.br\",\n    \"cep\": \"69900-100\"\n  },\n  {\n    \"protocolo\": \"PED-2026-0416\",\n    \"razao_social\": \"Limpa Bem Serviços de Conservação Ltda.\",\n    \"cnpj\": \"28.195.746/0001-10\",\n    \"representante\": \"Sueli Prado Antunes\",\n    \"email\": \"contato@limpabem.exemplo.com.br\",\n    \"cep\": \"78890-000\"\n  },\n  {\n    \"protocolo\": \"PED-2026-0417\",\n    \"razao_social\": \"Cerrado Alimentos e Refeições Ltda.\",\n    \"cnpj\": \"73.920.461/0001-59\",\n    \"representante\": \"Paulo Henrique Arruda\",\n    \"email\": \"atendimento@cerradoalimentos.exemplo.com.br\",\n    \"cep\": \"78110-000\"\n  }\n];\n\nreturn pedidos.map(pedido => ({ json: pedido }));"
+      },
+      "id": "b764a4b7-d332-5cf9-bb35-7edcead681d2",
+      "name": "Pedidos do dia",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://brasilapi.com.br/api/cep/v2/{{ $json.cep.replace(/\\D/g, '') }}",
+        "options": {}
+      },
+      "id": "8bab25db-5e9a-58b0-a2c1-dab341471667",
+      "name": "Consultar CEP",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        300
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2a3fb327-85e2-51ed-8599-64af1b3dcfe7",
+              "leftValue": "={{ $json.state }}",
+              "rightValue": "MT",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8b30bbb5-82b4-5571-a914-464a36888ab6",
+      "name": "Endereço em MT?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5dbb5d68-ad11-52b5-93bb-e3ac31323d5b",
+              "name": "protocolo",
+              "value": "={{ $('Pedidos do dia').item.json.protocolo }}",
+              "type": "string"
+            },
+            {
+              "id": "99152e42-4dab-54c6-a291-2a5c6edf72e3",
+              "name": "razao_social",
+              "value": "={{ $('Pedidos do dia').item.json.razao_social }}",
+              "type": "string"
+            },
+            {
+              "id": "e8ee2595-5a72-5f49-b078-51d133a64cc8",
+              "name": "cnpj",
+              "value": "={{ $('Pedidos do dia').item.json.cnpj }}",
+              "type": "string"
+            },
+            {
+              "id": "c239e09c-70f1-5e31-9f40-93f8f0d10011",
+              "name": "email",
+              "value": "={{ $('Pedidos do dia').item.json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "534ee03d-855c-5b2b-a113-053a0323f048",
+              "name": "cep",
+              "value": "={{ $('Pedidos do dia').item.json.cep }}",
+              "type": "string"
+            },
+            {
+              "id": "eca9899a-9447-5ef6-b7d0-cf0cb5306674",
+              "name": "municipio",
+              "value": "={{ $json.city }}",
+              "type": "string"
+            },
+            {
+              "id": "c75af888-0e5a-5448-8b16-1789fc4a1161",
+              "name": "uf",
+              "value": "={{ $json.state }}",
+              "type": "string"
+            },
+            {
+              "id": "414731cf-38ed-56f7-9bac-d21f5b06a63a",
+              "name": "logradouro",
+              "value": "={{ $json.street }}",
+              "type": "string"
+            },
+            {
+              "id": "fff2162a-6543-56f0-9415-e4fa4a3ce23b",
+              "name": "situacao",
+              "value": "APTO",
+              "type": "string"
+            },
+            {
+              "id": "8f4ad12d-4b10-557c-8193-26838bffff5e",
+              "name": "mensagem",
+              "value": "=Prezado(a) {{ $('Pedidos do dia').item.json.representante }}, o endereço informado no pedido {{ $('Pedidos do dia').item.json.protocolo }} ({{ $json.street }}, {{ $json.city }}/{{ $json.state }}) foi confirmado pela consulta ao CEP. O cadastro da {{ $('Pedidos do dia').item.json.razao_social }} segue para a análise documental.",
+              "type": "string"
+            },
+            {
+              "id": "a8b75308-23b0-50b9-be4b-a201b3d58058",
+              "name": "consultado_em",
+              "value": "={{ $now.setZone('America/Cuiaba').toFormat('dd/MM/yyyy HH:mm') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "50c4e0e9-1ca9-58a6-9ef8-585ec307d910",
+      "name": "Apto para cadastro",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        900,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5dbb5d68-ad11-52b5-93bb-e3ac31323d5b",
+              "name": "protocolo",
+              "value": "={{ $('Pedidos do dia').item.json.protocolo }}",
+              "type": "string"
+            },
+            {
+              "id": "99152e42-4dab-54c6-a291-2a5c6edf72e3",
+              "name": "razao_social",
+              "value": "={{ $('Pedidos do dia').item.json.razao_social }}",
+              "type": "string"
+            },
+            {
+              "id": "e8ee2595-5a72-5f49-b078-51d133a64cc8",
+              "name": "cnpj",
+              "value": "={{ $('Pedidos do dia').item.json.cnpj }}",
+              "type": "string"
+            },
+            {
+              "id": "c239e09c-70f1-5e31-9f40-93f8f0d10011",
+              "name": "email",
+              "value": "={{ $('Pedidos do dia').item.json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "534ee03d-855c-5b2b-a113-053a0323f048",
+              "name": "cep",
+              "value": "={{ $('Pedidos do dia').item.json.cep }}",
+              "type": "string"
+            },
+            {
+              "id": "eca9899a-9447-5ef6-b7d0-cf0cb5306674",
+              "name": "municipio",
+              "value": "={{ $json.city }}",
+              "type": "string"
+            },
+            {
+              "id": "c75af888-0e5a-5448-8b16-1789fc4a1161",
+              "name": "uf",
+              "value": "={{ $json.state }}",
+              "type": "string"
+            },
+            {
+              "id": "414731cf-38ed-56f7-9bac-d21f5b06a63a",
+              "name": "logradouro",
+              "value": "={{ $json.street }}",
+              "type": "string"
+            },
+            {
+              "id": "b741a3fb-af52-5f6a-bbc2-6920e327018e",
+              "name": "situacao",
+              "value": "CONFERENCIA MANUAL",
+              "type": "string"
+            },
+            {
+              "id": "9125d28d-b759-5f58-9f20-fdbb4f1fb2f1",
+              "name": "mensagem",
+              "value": "=Prezado(a) {{ $('Pedidos do dia').item.json.representante }}, o endereço informado no pedido {{ $('Pedidos do dia').item.json.protocolo }} ({{ $json.street }}, {{ $json.city }}/{{ $json.state }}) fica fora de Mato Grosso. Para dar sequência ao cadastro da {{ $('Pedidos do dia').item.json.razao_social }}, envie o comprovante de endereço da sede para conferência manual.",
+              "type": "string"
+            },
+            {
+              "id": "a8b75308-23b0-50b9-be4b-a201b3d58058",
+              "name": "consultado_em",
+              "value": "={{ $now.setZone('America/Cuiaba').toFormat('dd/MM/yyyy HH:mm') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d38e8f78-7823-58c7-be7e-b66d606f3bf7",
+      "name": "Conferência manual",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5dbb5d68-ad11-52b5-93bb-e3ac31323d5b",
+              "name": "protocolo",
+              "value": "={{ $('Pedidos do dia').item.json.protocolo }}",
+              "type": "string"
+            },
+            {
+              "id": "99152e42-4dab-54c6-a291-2a5c6edf72e3",
+              "name": "razao_social",
+              "value": "={{ $('Pedidos do dia').item.json.razao_social }}",
+              "type": "string"
+            },
+            {
+              "id": "e8ee2595-5a72-5f49-b078-51d133a64cc8",
+              "name": "cnpj",
+              "value": "={{ $('Pedidos do dia').item.json.cnpj }}",
+              "type": "string"
+            },
+            {
+              "id": "c239e09c-70f1-5e31-9f40-93f8f0d10011",
+              "name": "email",
+              "value": "={{ $('Pedidos do dia').item.json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "534ee03d-855c-5b2b-a113-053a0323f048",
+              "name": "cep",
+              "value": "={{ $('Pedidos do dia').item.json.cep }}",
+              "type": "string"
+            },
+            {
+              "id": "4bdca519-9b11-5505-be28-d216480afd5f",
+              "name": "municipio",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "b1f42b88-60d8-5e85-87a6-3ca12586b38b",
+              "name": "uf",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "b2d44736-948f-5397-88b5-513ec5822223",
+              "name": "logradouro",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "6f86e8f1-7a39-567e-8e61-b4cd3db04122",
+              "name": "situacao",
+              "value": "CEP NAO LOCALIZADO",
+              "type": "string"
+            },
+            {
+              "id": "a053c3c5-d2d8-522a-bf6d-6df094b444b0",
+              "name": "mensagem",
+              "value": "=Prezado(a) {{ $('Pedidos do dia').item.json.representante }}, o CEP {{ $('Pedidos do dia').item.json.cep }} informado no pedido {{ $('Pedidos do dia').item.json.protocolo }} não foi localizado na consulta. Confira o número e envie o CEP correto da sede da {{ $('Pedidos do dia').item.json.razao_social }} para darmos sequência ao cadastro.",
+              "type": "string"
+            },
+            {
+              "id": "a8b75308-23b0-50b9-be4b-a201b3d58058",
+              "name": "consultado_em",
+              "value": "={{ $now.setZone('America/Cuiaba').toFormat('dd/MM/yyyy HH:mm') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "18147895-6735-5427-b30b-38d2c2d7f060",
+      "name": "CEP não localizado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        900,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "cadastro_fornecedores"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "b83b8d75-6458-5a43-8ba8-05339892668c",
+      "name": "Registrar pedido",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1140,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Todo dia às 8h": {
+      "main": [
+        [
+          {
+            "node": "Pedidos do dia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedidos do dia": {
+      "main": [
+        [
+          {
+            "node": "Consultar CEP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar CEP": {
+      "main": [
+        [
+          {
+            "node": "Endereço em MT?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CEP não localizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Endereço em MT?": {
+      "main": [
+        [
+          {
+            "node": "Apto para cadastro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Conferência manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apto para cadastro": {
+      "main": [
+        [
+          {
+            "node": "Registrar pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conferência manual": {
+      "main": [
+        [
+          {
+            "node": "Registrar pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CEP não localizado": {
+      "main": [
+        [
+          {
+            "node": "Registrar pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Cuiaba"
+  },
+  "id": "Aula09wf02Rot00"
+}
