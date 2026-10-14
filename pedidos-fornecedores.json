@@ -1,0 +1,25 @@
+{
+  "_aviso": "Dados fictícios: os CNPJs não passam na verificação dos dígitos e os e-mails usam um domínio inexistente.",
+  "pedido_unico": {
+    "protocolo": "PED-2026-0412",
+    "razao_social": "Papelaria Pantanal Comércio Ltda.",
+    "cnpj": "47.021.358/0001-67",
+    "representante": "Marta Aparecida Siqueira",
+    "email": "contato@papelariapantanal.exemplo.com.br",
+    "cep": "78048-000"
+  },
+  "pedidos_do_dia": [
+    {"protocolo": "PED-2026-0413", "razao_social": "Gráfica Chapada Serviços Gráficos Ltda.", "cnpj": "51.864.027/0001-66", "representante": "Rogério Lima Bastos", "email": "comercial@graficachapada.exemplo.com.br", "cep": "78700-100"},
+    {"protocolo": "PED-2026-0414", "razao_social": "Nortão Informática e Suprimentos Ltda.", "cnpj": "33.609.214/0001-12", "representante": "Fernanda Costa Rehder", "email": "vendas@nortaoinfo.exemplo.com.br", "cep": "78550-200"},
+    {"protocolo": "PED-2026-0415", "razao_social": "Acre Mobiliário Corporativo Ltda.", "cnpj": "60.471.835/0001-54", "representante": "Joaquim Nery Furtado", "email": "licitacoes@acremobiliario.exemplo.com.br", "cep": "69900-100"},
+    {"protocolo": "PED-2026-0416", "razao_social": "Limpa Bem Serviços de Conservação Ltda.", "cnpj": "28.195.746/0001-10", "representante": "Sueli Prado Antunes", "email": "contato@limpabem.exemplo.com.br", "cep": "78890-000"},
+    {"protocolo": "PED-2026-0417", "razao_social": "Cerrado Alimentos e Refeições Ltda.", "cnpj": "73.920.461/0001-59", "representante": "Paulo Henrique Arruda", "email": "atendimento@cerradoalimentos.exemplo.com.br", "cep": "78110-000"}
+  ],
+  "pedido_formulario": {
+    "razao_social": "Cuiabá Copiadora e Digitalização Ltda.",
+    "cnpj": "19.537.640/0001-23",
+    "representante": "Luciana Ferraz Monteiro",
+    "email": "contato@cuiabacopiadora.exemplo.com.br",
+    "cep": "78048-000"
+  }
+}

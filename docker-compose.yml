@@ -1,0 +1,18 @@
+services:
+  n8n:
+    image: n8nio/n8n:2.42.5
+    container_name: n8n-aula09
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5680:5678"
+    environment:
+      - GENERIC_TIMEZONE=America/Cuiaba
+      - TZ=America/Cuiaba
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=336
+      - EXECUTIONS_DATA_PRUNE_MAX_COUNT=10000
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
