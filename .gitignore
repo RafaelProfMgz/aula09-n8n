@@ -7,3 +7,4 @@ workflows/rotina-cli.json
 # material da aula (não vai para o repositório)
 Aula-09-Automacao-Workflows-n8n.pdf
 aula.txt
+*.zip
